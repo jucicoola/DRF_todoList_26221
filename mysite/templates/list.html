@@ -1,0 +1,30 @@
+{% extends "base.html"%}
+{% load static %}
+{% block content %}
+
+<div class="todocontainer">
+    {% for todo in todos %}
+        <div class="todo-item">
+            <ol>제목</ol> {{todo.title}}
+            <ol>설명</ol> {{todo.description}}
+            <ol>완료 여부</ol> {{todo.complete}}
+            <ol>작성일</ol> {{todo.created_at|date:"Y-m-d H:i"}}
+        </div>
+    {% empty %}
+        <p>등록된 할 일이 없습니다.</p>
+    {% endfor %}
+</div>
+
+<button class = "todoCreate" id = "createBtn">Todo 등록하기</button>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function (){
+        console.log("create loading");
+    });
+        document.getElementById("createBtn").addEventListener
+        ("click", () => {
+            window.location.href = "/todo/create";
+            console.log("createBtn click")
+        });
+</script>
+{% endblock %}
