@@ -1,0 +1,24 @@
+# 커밋하기 전에 자동으로 검사하여 코드의 질을 높여주는 도구에 해당함
+# hooks의 id는 사용할 기능임
+# args: [--fix] 문제가 있으면 직접 수정까지 해줌
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.9
+    hooks:
+      - id: trailing-whitespace # 줄 끝에 불필요한 공백이 있으면 삭제
+      - id: end-of-file-fixer # 파일 맨 마지막에 빈 줄이 하나 있는지 확인하고 없으면 추가합니다. 
+      - id: check-yaml # YAML 파일 문법이 맞는지 검사
+      - id: check-added-large-files # 너무 용량이 큰 파일이 커밋에 포함되어 있지 않았는지 확인함 
+  
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.4.4
+    hooks:
+      - id: ruff #파이썬 코드의 에러나 스타일을 검사하고 알려줌
+        args: [--fix] # 자동 수정 명령어 
+
+  - repo: https://github.com/psf/black 
+    rev: 24.3.0
+    hooks:
+      - id: black #파이썬 코드를 읽기 좋게 강제로 포맷팅(들여쓰기, 따옴표 등)함
+        language_version: python3 #파이썬을 사용하도록 함
