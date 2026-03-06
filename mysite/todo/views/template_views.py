@@ -1,9 +1,17 @@
-from django.shortcuts import render
-from ..models import todo
-# from ..serializers import TodoSerializer
-from django.views import View
-from django.views.generic import CreateView, DetailView, UpdateView
+'''
+1 Standard Library 없음
+2 Third-party: django
+3 Local application :
+4 delete
+'''
+# 2-1 Third-party
+from django.views.generic import ListView, CreateView, DetailView, UpdateView
 from django.urls import reverse_lazy
+from django.shortcuts import render
+
+# 3. loacal application
+from ..models import todo
+
 '''
 화면으로쏴주는 로직
 3개 모두 가상릴레이션을 만드는 로직으로 todo 관련 데이터를 전부 불러서 진행 
@@ -13,10 +21,10 @@ from django.urls import reverse_lazy
 #     todos = todo.objects.all()
 #     return render(request, "todo.html", {"todos": todos})
 
-class TodoListView(View):
+class TodoListView(ListView):
     def get(self, request):
         todos = todo.objects.all()
-        return render(request, "todo.html", {"todos": todos})
+        return render(request, "list.html", {"todos": todos})
 
 # class TodoListGenericView(ListView):
 #     model = todo

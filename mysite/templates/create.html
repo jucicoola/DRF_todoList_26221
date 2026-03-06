@@ -4,27 +4,27 @@
 <div class="container">
   <h2>Create a New Todo</h2>
     <div>
-      <label for="name">Name:</label>
+      <label for="name">제목:</label>
       <input type="text" name="name" id="name">
     </div>
 
     <div>
-      <label for="description">Description:</label>
+      <label for="description">설명:</label>
       <textarea name="description" id="description">
       </textarea>
     </div>
 
     <div>
-      <label for="complete">Complete:</label>
+      <label for="complete">완료 여부:</label>
       <input type="checkbox" name="complete" id="complete">
     </div>
 
     <div>
-      <label for="exp">Experience Points:</label>
+      <label for="exp">경험치</label>
       <input type="number" name="exp" id="exp" min="0">
     </div>
 
-    <button type="submit" id="todoCreate">Create</button>
+    <button type="submit" id="todoCreate">등록하기</button>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
@@ -69,7 +69,7 @@ document.getElementById("todoCreate").addEventListener("click", async () => {
       // Todo 생성 API로 POST 요청 전송
       // 비동기 작업이 끝날 때까지 기다림, 서버 응답이 올 때까지 기다린 후 다음 코드 실행
 
-      name: document.getElementById("name").value,
+      name: document.getElementById("title").value,
       // 입력한 Todo 이름
 
       description: document.getElementById("description").value,

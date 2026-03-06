@@ -1,14 +1,22 @@
 
+'''
+1 Standard Library 없음
+2 Third-party
+3 Local application :
+'''
+# 2. django
+# 2-1. django third_party 
+from rest_framework import viewsets
+from rest_framework.pagination import PageNumberPagination
+
+
+#3 Local application
 from ..models import todo
 from ..serializers import TodoSerializer
-from rest_framework import status 
-from rest_framework.views import APIView
-from rest_framework.response import Response
-
 '''
 api로 쏴주는 부분
 가상 릴레이션을 만들어서 api로? 쏴줌
-'''
+
 class TodoListAPI(APIView):
     def get(self, request):
 
@@ -81,3 +89,13 @@ class TodoDeleteAPI(APIView):
             )
         instance.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+'''
+
+class TodoViewSet(viewsets.ModelViewSet):
+    queryset = todo.objects.all().order_by("-created_at")
+    serializer_class = TodoSerializer
+
+class TodoListPagination(PageNumberPagination):
+    page_size = 3
+    page_size_query_param = "page_size"
+    max_page_size = 50
