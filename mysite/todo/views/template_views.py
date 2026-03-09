@@ -34,7 +34,7 @@ class TodoListView(ListView):
 
 class TodoCreateView(CreateView):
     model = todo
-    fields = ['title', 'description', 'complete', 'exp']
+    fields = ['title', 'description', 'complete', 'exp', 'img']
     template_name = "create.html"
     success_url = reverse_lazy('todo:list')
 
@@ -46,7 +46,7 @@ class TodoDetailView(DetailView):
 class TodoUpdateView(UpdateView):
     model = todo
     fields = [
-        "title", "description", "complete", "exp"
+        "title", "description", "complete", "exp", 'img'
     ]
     template_name = "update.html"
     context_object_name = "todo"

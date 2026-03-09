@@ -6,6 +6,8 @@
 
 # 2. Third-party 외부 라이브러리 django 
 from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static 
 
 # 2-1. Third-party 외부라이브러리 REST
 from rest_framework.routers import DefaultRouter
@@ -22,8 +24,8 @@ router.register("view", TodoViewSet, basename="todo")
 urlpatterns = [
     path("list/", TodoListView.as_view(), name="todo_list"),
     path("create/", TodoCreateView.as_view(), name="todo_create"),
-    path("detail/<int:pk>", TodoDetailView.as_view(), name="todo_Detail"),
-    path("update/<int:pk>", TodoUpdateView.as_view(), name="todo_update"),
+    path("detail/<int:pk>/", TodoDetailView.as_view(), name="todo_Detail"),
+    path("update/<int:pk>/", TodoUpdateView.as_view(), name="todo_update"),
 
 
     # path("api/list/", TodoListAPI.as_view(), name="todo_api_list"),
@@ -34,3 +36,6 @@ urlpatterns = [
 
     path("viewsets/", include(router.urls)),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

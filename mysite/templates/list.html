@@ -71,6 +71,9 @@ document.addEventListener("DOMContentLoaded", () => {
             const div = document.createElement("div");
             div.className = "todo-item";
 
+            console.log("개별 todo 데이터:", todo);
+            const todoId = todo.id || todo.pk;
+
             /* dataset → HTML 요소에 데이터를 저장하는 속성 */
             div.dataset.id = todo.id;
 
@@ -80,12 +83,17 @@ document.addEventListener("DOMContentLoaded", () => {
                 <p><strong>설명:</strong> ${todo.description}</p>
                 <p><strong>완료 여부:</strong> ${todo.complete}</p>
                 <p><strong>exp:</strong> ${todo.exp}</p>
+                <p><strong>이미지:</strong>${todo.img ? `<img src = "${todo.img}" style="max-width:200px;">` : "이미지없음"}</p>
                 <hr>
             `;
 
             /* Todo 클릭 시 상세 페이지 이동 */
             div.addEventListener("click", () => {
-                window.location.href = `/todo/detail/${todo.id}/`;
+                if (todoId) {
+                    window.location.href = `/todo/detail/${todoId}/`;}
+                else {
+                    console.error("ID값이 없어 이동할 수 없습니다.")
+                } 
             });
 
             /* 화면에 Todo 추가 */
