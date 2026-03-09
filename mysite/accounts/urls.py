@@ -10,6 +10,7 @@ from django.urls import path, include
 from .views import SignupAPIView, SessionLoginAPIView, SessionLogoutAPIView
 from .views_page import LoginPageView, SignupPageView
 
+
 urlpatterns = [
     path("api/signup/", SignupAPIView.as_view(), name="api-signup"),
     path("api/login/", SessionLoginAPIView.as_view(), name="api-login"),
