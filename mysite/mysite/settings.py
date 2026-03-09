@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "todo",
+    "accounts",
 ]
 
 MIDDLEWARE = [
@@ -75,19 +76,27 @@ TEMPLATES = [
 WSGI_APPLICATION = "mysite.wsgi.application"
 
 REST_FRAMEWORK = {
-    "DEFAULT_RENDERER_CLASSES": [
-        "rest_framework.renderers.JSONRenderer",
-        "rest_framework.renderers.BrowsableAPIRenderer",
-    ],
     
     # 기본권한 설정: 누구나 API에 접근 가능(개발시 사용)
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framwork.authentication.SessionAuthentication",
+        "rest_framwork.authentication.BasicAuthentication",
+    ],
+    
     "DEFAULT_PERMISSION_CLASSES": [
-        "rest_framework.permissions.AllowAny",
+        "rest_framework.permissions.IsAythenticated",
   ],
   
   # 기본 페이지네이션 설정
     "DEFAULT_PAGINATION_CLASS": "todo.pagination.CustomPageNumberPagination",
+
     "PAGE_SIZE": 3,
+
+     "DEFAULT_RENDERER_CLASSES": [
+        "rest_framework.renderers.JSONRenderer",
+        "rest_framework.renderers.BrowsableAPIRenderer",
+    ],
+
 }
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
