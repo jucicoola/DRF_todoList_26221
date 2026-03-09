@@ -15,5 +15,8 @@ class  TodoSerializer(ModelSerializer):
             "img"
             # "completed_at",
             # "created_at",
-            # "updated_at",
+            # # "updated_at",
+            # "user",
+            # res
         ]
+        read_only_fields = ["user"]

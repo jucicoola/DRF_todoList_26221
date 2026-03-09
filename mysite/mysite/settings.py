@@ -79,12 +79,12 @@ REST_FRAMEWORK = {
     
     # 기본권한 설정: 누구나 API에 접근 가능(개발시 사용)
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framwork.authentication.SessionAuthentication",
-        "rest_framwork.authentication.BasicAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
+        "rest_framework.authentication.BasicAuthentication",
     ],
     
     "DEFAULT_PERMISSION_CLASSES": [
-        "rest_framework.permissions.IsAythenticated",
+        "rest_framework.permissions.IsAuthenticated",
   ],
   
   # 기본 페이지네이션 설정

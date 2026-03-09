@@ -7,8 +7,8 @@
 from django.urls import path, include
 
 # 3. views, views_page
-from .views import SignupAPIView, SessionLoginAPIView, SessionLogoutAPIView
-from .views_page import LoginPageView, SignupPageView
+from .views.views import SignupAPIView, SessionLoginAPIView, SessionLogoutAPIView
+from .views.views_page import LoginPageView, SignupPageView
 
 
 urlpatterns = [
