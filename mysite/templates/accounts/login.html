@@ -1,5 +1,4 @@
 {% extends "auth_base.html" %}
-{% load static %}
 {% block content %}
 
 <section class="auth-card">
@@ -17,35 +16,53 @@
 
 {% block scripts %}
 <script>
-    document.addEventListener("DOMContentLoaded", () => {
-        const api = axios.create({ baseURL: "/"});
-        
-        api.interceptors.request.use(config => {
-            const csrfToken = documnet.cookie
-                .split("; ")
-                .find(row => row.startWith("csrftoken="))
-                ?.split("=")[1];
-            
-            config.headers = config.headers || {};
-            if (csrfToken) config.headers["X-CSRFToken"] = csrfToken;
-            return config;
-        });
+document.addEventListener("DOMContentLoaded", () => {
+  if (!window.api) {
+    console.error("window.api가 없습니다. auth_base.html에서 static/js/api.js가 로드됐는지 확인하세요.");
+    alert("설정 오류: api.js가 로드되지 않았습니다.");
+    return; // ✅ [추가됨] api 없으면 여기서 중단
+  }
 
-    document.getElementById("loginBtn").addEventListener("click", async () => {
-        try{
-            const username = document.getElementById("username").value;
-            const password = document.getElementById("password").value;
+  // (선택) 토큰 키 이름: 프로젝트에서 공통으로 쓰기 좋게 상수화
+  const ACCESS_KEY = "access_token";
+  const REFRESH_KEY = "refresh_token";
 
-            await api.post("/api/login/", {username, password});
+  document.getElementById("loginBtn").addEventListener("click", async () => {
+    try {
+      const username = document.getElementById("username").value.trim(); // ✅ 변경
+      const password = document.getElementById("password").value;
 
-            alert("로그인 성공");
-            window.location.href = "/todo/list";
-        } catch (err) {
-            console.log(err.response?.data || err.message);
-            alert("로그인 실패")
-        }
-        });
-    });
+      if (!username || !password) {
+        alert("username / password를 입력해주세요.");
+        return;
+      }
+
+      localStorage.removeItem(ACCESS_KEY);
+      localStorage.removeItem(REFRESH_KEY);
+
+      const res = await window.api.post("/api/login/", { username, password }); // ✅ 변경
+      const access = res.data?.access;
+      const refresh = res.data?.refresh;
+
+      if (!access || !refresh) {
+        console.log("토큰 응답이 이상함:", res.data);
+        alert("로그인 응답에 토큰이 없습니다. 서버 응답을 확인하세요.");
+        return;
+      }
+
+      // 토큰 저장
+      localStorage.setItem(ACCESS_KEY, access);
+      localStorage.setItem(REFRESH_KEY, refresh);
+
+      // 로그인 성공 후 메인(list)로
+      window.location.href = "/todo/list/";
+    } catch (err) {
+      console.log(err.response?.data || err.message);
+      alert("로그인 실패");
+    }
+  });
+});
 </script>
 {% endblock %}
+    
 
