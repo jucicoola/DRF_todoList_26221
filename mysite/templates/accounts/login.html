@@ -1,0 +1,51 @@
+{% extends "auth_base.html" %}
+{% load static %}
+{% block content %}
+
+<section class="auth-card">
+    <h2>로그인 (STEP1: 세션 로그인) </h2>
+
+    <input id = "username" placeholder="이름을 입력하세요">
+    <input id = "password" placeholder="비밀번호를 입력하세요" type="password">
+    <button id = "loginBtn"> 로그인 </button>
+
+    <p style="margin-top:12px;">
+    아직 계정이 없나요? <a href="/signup_page/">회원가입</a>
+    </p>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const api = axios.create({ baseURL: "/"});
+        
+        api.interceptors.request.use(config => {
+            const csrfToken = documnet.cookie
+                .split("; ")
+                .find(row => row.startWith("csrftoken="))
+                ?.split("=")[1];
+            
+            config.headers = config.headers || {};
+            if (csrfToken) config.headers["X-CSRFToken"] = csrfToken;
+            return config;
+        });
+
+    document.getElementById("loginBtn").addEventListener("click", async () => {
+        try{
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            await api.post("/api/login/", {username, password});
+
+            alert("로그인 성공");
+            window.location.href = "/todo/list";
+        } catch (err) {
+            console.log(err.response?.data || err.message);
+            alert("로그인 실패")
+        }
+        });
+    });
+</script>
+{% endblock %}
+

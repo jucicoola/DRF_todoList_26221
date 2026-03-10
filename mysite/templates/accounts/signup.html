@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<section class="auth-card">
+<h2> 회원가입 </h2>
+
+<input id = "username" placeholder="username">
+<input id = "password" placeholder="password" type="password">
+<input id = "password2" placeholder="password2" type="password">
+
+<button id="signupBtn"> 가입하기 </button>
+
+  <!-- 이미 계정이 있는 경우 로그인 페이지 이동 -->
+  <p style="margin-top:12px;">
+    이미 계정이 있나요? <a href="/login/">로그인</a>
+  </p>
+</section>
+{% endblock %}
+
+
+{% block scripts %}
+
+<script>
+    document.addEventListener("DOMContentLoaded", () =>{
+        const api = axios.create({baseURL: "/"});
+
+        api.interceptors.request.use(config => {
+            const csrfToken = documnet.cookie
+                .split("; ")
+                .find(row => row.startsWith("crsftoken="))
+                ?.split("=")[1];
+            config.headers = config.headers || {};
+
+            if (csrfToken) config.headers["X-CSRFToken"] =csrfToken;
+
+            return config;
+        });
+    
+        document.getElementById("signupBtn").addEventListener("click", async () => {
+            try {
+                const username = document.getElementById("username").value;
+                const password = document.getElementById("password").value;
+                const password2 = document.getElementById("password2").value;
+
+                await api.post("/api/signup/", {username, password, password2});
+
+                alert("회원가입 완료 되었습니다. 로그인으로 이동하세요");
+
+                window.location.href = "/login/";
+            } catch (err) {
+                console.log(err.response?.data || err.message);
+
+                alert("회원가입 실패");
+            }
+        });
+    });
+</script>
+{% endblock %}
