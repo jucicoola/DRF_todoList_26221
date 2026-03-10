@@ -1,18 +1,25 @@
-{% extend "base.html" %}
+{% extends "auth_base.html" %}
 {% load static %}
 {% block content %}
 
-<h2>로그인 (STEP1: 세션 로그인) </h2>
+<section class="auth-card">
+    <h2>로그인 (STEP1: 세션 로그인) </h2>
 
-<input id = "username" placeholder="이름을 입력하세요">
-<input id = "password" placeholder="비밀번호를 입력하세요" type="password">
-<button> id = "loginBtn"</button>
+    <input id = "username" placeholder="이름을 입력하세요">
+    <input id = "password" placeholder="비밀번호를 입력하세요" type="password">
+    <button id = "loginBtn"> 로그인 </button>
 
-<script src="https://cdn.jsdeliver.net/npm/axios/dist/axios.min/js"></script>
+    <p style="margin-top:12px;">
+    아직 계정이 없나요? <a href="/signup_page/">회원가입</a>
+    </p>
+</section>
+{% endblock %}
 
+{% block scripts %}
 <script>
     document.addEventListener("DOMContentLoaded", () => {
         const api = axios.create({ baseURL: "/"});
+        
         api.interceptors.request.use(config => {
             const csrfToken = documnet.cookie
                 .split("; ")

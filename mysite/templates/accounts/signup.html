@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 {% block content %}
-
+<section class="auth-card">
 <h2> 회원가입 </h2>
 
 <input id = "username" placeholder="username">
@@ -10,7 +10,15 @@
 
 <button id="signupBtn"> 가입하기 </button>
 
-<script src="https://cdn.jsdeliver.net/npm/axios/dist/axios.min.js"></script>
+  <!-- 이미 계정이 있는 경우 로그인 페이지 이동 -->
+  <p style="margin-top:12px;">
+    이미 계정이 있나요? <a href="/login/">로그인</a>
+  </p>
+</section>
+{% endblock %}
+
+
+{% block scripts %}
 
 <script>
     document.addEventListener("DOMContentLoaded", () =>{
