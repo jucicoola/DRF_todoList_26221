@@ -17,7 +17,6 @@ window.api = axios.create({
   timeout: 15000,
 });
 
-
 // ✅ 모든 요청에 Authorization 자동 부착
 window.api.interceptors.request.use((config) => {
   const token = getAccessToken();

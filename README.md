@@ -27,7 +27,7 @@ AI 모델 연동(Hugging Face), Redis/Celery 비동기 처리까지
 - pre-commit 설정 (black, isort, flake8)  
 - Todo CRUD 구현  
 
-<img src = "{https://github.com/jucicoola/DRF_todoList_26221/issues/1#issue-4025352452}" width="200" height = "400"></img>
+<img src = "https://github.com/user-attachments/assets/217b3fb5-73ca-4088-bb59-5ecfbee105d3" width="400" height = "400"></img>
   
 ### 2️⃣ Generic View 기반 CRUD  
 - CBV 기반 구조 설계  

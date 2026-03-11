@@ -1,5 +1,6 @@
 {% extends "auth_base.html" %}
 {% load static %}
+
 {% block content %}
 <section class="auth-card">
 <h2> 회원가입 </h2>
@@ -10,7 +11,6 @@
 
 <button id="signupBtn"> 가입하기 </button>
 
-  <!-- 이미 계정이 있는 경우 로그인 페이지 이동 -->
   <p style="margin-top:12px;">
     이미 계정이 있나요? <a href="/login/">로그인</a>
   </p>
@@ -19,7 +19,6 @@
 
 
 {% block scripts %}
-
 <script>
     document.addEventListener("DOMContentLoaded", () =>{
         document.getElementById("signupBtn").addEventListener("click", async () => {
@@ -36,17 +35,27 @@
                 const password = document.getElementById("password").value;
                 const password2 = document.getElementById("password2").value;
 
-                await api.post("/api/signup/", {username, password, password2});
+        if (password !== password2) {
+            alert("비밀번호가 일치하지 않습니다.");
+            return;
+        }
 
-                alert("회원가입 완료 되었습니다. 로그인으로 이동하세요");
+        await window.api.post("/signup/", { username, password, password2 });//✅변경
 
-                window.location.href = "/login/";
-            } catch (err) {
-                console.log(err.response?.data || err.message);
+        alert("회원가입 완료 → 로그인으로 이동");
+        window.location.href = "/login/";
+        } catch (err) {
+        console.log(err.response?.data || err.message);
 
-                alert("회원가입 실패");
-            }
-        });
+        const msg =
+            err.response?.data?.detail ||
+            err.response?.data?.username?.[0] ||
+            err.response?.data?.password?.[0] ||
+            "회원가입 실패";
+        alert(msg);
+
+        }
+    });
     });
 </script>
 {% endblock %}

@@ -17,12 +17,14 @@ from rest_framework.exceptions import PermissionDenied
 from ..models import todo
 from ..serializers import TodoSerializer
 
+
 class TodoListPagination(PageNumberPagination):
     page_size = 3
     page_size_query_param = "page_size"
     max_page_size = 50
     
 class TodoViewSet(viewsets.ModelViewSet):
+    queryset = todo.objects.all().order_by("-created_at")
     serializer_class = TodoSerializer
     permission_classes = [IsAuthenticated]
     pagination_class = TodoListPagination

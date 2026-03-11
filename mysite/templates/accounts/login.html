@@ -1,8 +1,10 @@
 {% extends "auth_base.html" %}
+
 {% load static %}
 {% block css %}
 <link rel="stylesheet" href="{% static 'css/login.css' %}">
 {% endblock %}
+
 {% block content %}
 
 <section class="auth-card">
@@ -36,10 +38,12 @@ document.addEventListener("DOMContentLoaded", () => {
       const password = document.getElementById("password").value;
 
       // 입력값 간단한 검증
+
       if (!username || !password) {
         alert("username / password를 입력해주세요.");
         return;
       }
+
 
       // 이전 토큰 제거 (충돌 방지)
       localStorage.removeItem(ACCESS_KEY);
@@ -48,7 +52,6 @@ document.addEventListener("DOMContentLoaded", () => {
       // 사용자 입력 데이터를 서버로 전송, 기존코드
       // await api.post("/api/login/", { username, password });
       const res = await window.api.post("/api/login/", { username, password });
-
       const access = res.data?.access;
       const refresh = res.data?.refresh;
 
@@ -62,14 +65,17 @@ document.addEventListener("DOMContentLoaded", () => {
       localStorage.setItem(ACCESS_KEY, access);
       localStorage.setItem(REFRESH_KEY, refresh);
 
+
       alert("로그인 성공");
       window.location.href = "/todo/list/";
+
 
     } catch (err) {
       console.log(err.response?.data || err.message);
       alert("로그인 실패");
     }
   });
+
 
 });
 </script>
