@@ -1,0 +1,222 @@
+[
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$FI2r956Q9FQ2ZRSvAh8xlu$VLXcLTLnaOPF6FWhNw+huQjsRCga+/KSqRvijUqmYVU=",
+    "last_login": "2026-03-05T02:24:55.248Z",
+    "is_superuser": true,
+    "username": "admin",
+    "first_name": "",
+    "last_name": "",
+    "email": "jucicoola@gmail.com",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2026-03-05T01:33:23.098Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$yav7nymfDfEQhU9TVAeY54$4vpzHtcZ17pJWckUCj6OIL59HQ5XbAfbu+VbLn6Ep+A=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "jong",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-03-11T03:04:25.358Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$Kl98TIvzrHi2TDNMVTwfSg$WQVyZEwOixtGAPucGfU8dN9eZi+faCNQ7Z4E+b2Ld00=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "kim",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-03-11T05:06:43.633Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "todo.todo",
+  "pk": 1,
+  "fields": {
+    "user": [
+      "jong"
+    ],
+    "name": "",
+    "title": "mvt 개발과정 순차적 진행",
+    "description": "mvt 하고 test하고 tdd 기반 연습하기",
+    "complete": false,
+    "exp": 2,
+    "completed_at": null,
+    "created_at": "2026-03-11T05:05:30.716Z",
+    "updated_at": "2026-03-11T05:05:30.716Z",
+    "img": "todo_images/청개구리_뒤.png",
+    "is_public": true
+  }
+},
+{
+  "model": "todo.todo",
+  "pk": 2,
+  "fields": {
+    "user": [
+      "jong"
+    ],
+    "name": "",
+    "title": "잘좀 하자 test의 중요성",
+    "description": "오타 수정하는게 대부분이다.",
+    "complete": false,
+    "exp": 0,
+    "completed_at": null,
+    "created_at": "2026-03-11T05:06:14.986Z",
+    "updated_at": "2026-03-11T05:06:14.986Z",
+    "img": "todo_images/청개구리_옆_tV9mE4Q.png",
+    "is_public": true
+  }
+},
+{
+  "model": "todo.todo",
+  "pk": 3,
+  "fields": {
+    "user": [
+      "kim"
+    ],
+    "name": "",
+    "title": "우왁",
+    "description": "왜 이번엔 리스트가 안 나오는가?\r\n\r\n하나 완",
+    "complete": true,
+    "exp": 3,
+    "completed_at": "2026-03-11T07:02:14.373Z",
+    "created_at": "2026-03-11T05:07:56.042Z",
+    "updated_at": "2026-03-11T07:02:31.108Z",
+    "img": "todo_images/뉴스_앵커.png",
+    "is_public": true
+  }
+},
+{
+  "model": "interaction.todolike",
+  "pk": 1,
+  "fields": {
+    "user": [
+      "jong"
+    ],
+    "todo": 2,
+    "created_at": "2026-03-11T05:20:42.774Z"
+  }
+},
+{
+  "model": "interaction.todolike",
+  "pk": 2,
+  "fields": {
+    "user": [
+      "jong"
+    ],
+    "todo": 1,
+    "created_at": "2026-03-11T05:20:45.936Z"
+  }
+},
+{
+  "model": "interaction.todolike",
+  "pk": 4,
+  "fields": {
+    "user": [
+      "kim"
+    ],
+    "todo": 1,
+    "created_at": "2026-03-11T05:48:43.635Z"
+  }
+},
+{
+  "model": "interaction.todolike",
+  "pk": 5,
+  "fields": {
+    "user": [
+      "kim"
+    ],
+    "todo": 2,
+    "created_at": "2026-03-11T05:48:46.923Z"
+  }
+},
+{
+  "model": "interaction.todolike",
+  "pk": 8,
+  "fields": {
+    "user": [
+      "kim"
+    ],
+    "todo": 3,
+    "created_at": "2026-03-11T05:49:48.898Z"
+  }
+},
+{
+  "model": "interaction.todolike",
+  "pk": 9,
+  "fields": {
+    "user": [
+      "jong"
+    ],
+    "todo": 3,
+    "created_at": "2026-03-11T06:22:12.134Z"
+  }
+},
+{
+  "model": "interaction.todobookmark",
+  "pk": 1,
+  "fields": {
+    "user": [
+      "jong"
+    ],
+    "todo": 2,
+    "created_at": "2026-03-11T05:20:46.811Z"
+  }
+},
+{
+  "model": "interaction.todobookmark",
+  "pk": 5,
+  "fields": {
+    "user": [
+      "kim"
+    ],
+    "todo": 1,
+    "created_at": "2026-03-11T05:48:45.496Z"
+  }
+},
+{
+  "model": "interaction.todocomment",
+  "pk": 1,
+  "fields": {
+    "user": [
+      "jong"
+    ],
+    "todo": 2,
+    "content": "그러게 잘 좀 하지 그랬어요?\nmodel 이름을 왜 소문자로 만들어서 그거 땜빵하려다가 땜빵을 못하시네",
+    "created_at": "2026-03-11T05:21:33.168Z"
+  }
+},
+{
+  "model": "interaction.todocomment",
+  "pk": 2,
+  "fields": {
+    "user": [
+      "kim"
+    ],
+    "todo": 1,
+    "content": "다음부터는 다 만들고 수정하세요 \n까불지 말고~~^^",
+    "created_at": "2026-03-11T05:49:38.936Z"
+  }
+}
+]
