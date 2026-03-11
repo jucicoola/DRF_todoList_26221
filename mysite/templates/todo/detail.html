@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+<div class = "todoDetail" >
+  <p><strong>이름:</strong> {{ todo.name }}</p>
+  <p><strong>설명:</strong> {{ todo.description }}</p>
+  <p><strong>완료 여부:</strong> {{ todo.complete }}</p>
+  <p><strong>작성일:</strong> {{ todo.created_at }}</p>
+
+  {% if todo.img %}
+  <p><strong>이미지:</strong></p>
+  <img src = "{{todo.img.url}}" alt = "todo img" style="max-width:300px; height:auto;">
+  {% else %}
+    <p><strong>이미지:없음</strong></p>
+  {% endif %}  
+</div>
+
+<div class="todoButon"></div>
+  <button class="todoUpdate">수정</button>
+  <button class="todoDelete">삭제</button>
+  <button class="todoHome">홈으로</button>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<div id="page-data" data-todo-id="{{ todo.id }}"></div>
+<script src="{% static 'js/todo_update.js' %}"></script>
+{% endblock %}

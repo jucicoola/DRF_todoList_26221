@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "auth_base.html" %}
 {% load static %}
 {% block content %}
 <section class="auth-card">
@@ -22,21 +22,15 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", () =>{
-        const api = axios.create({baseURL: "/"});
-
-        api.interceptors.request.use(config => {
-            const csrfToken = documnet.cookie
-                .split("; ")
-                .find(row => row.startsWith("crsftoken="))
-                ?.split("=")[1];
-            config.headers = config.headers || {};
-
-            if (csrfToken) config.headers["X-CSRFToken"] =csrfToken;
-
-            return config;
-        });
-    
         document.getElementById("signupBtn").addEventListener("click", async () => {
+            if (!window.api) {
+            console.error("window.api가 없습니다. auth_base.html에서 static/js/api.js가 로드됐는지 확인하세요.");
+            alert("설정 오류: api.js가 로드되지 않았습니다.");
+            return; // ✅ [추가됨] api 없으면 중단
+            }
+
+    
+
             try {
                 const username = document.getElementById("username").value;
                 const password = document.getElementById("password").value;

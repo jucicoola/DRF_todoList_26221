@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "todo",
     "accounts",
+    "interaction"
 ]
 
 MIDDLEWARE = [
@@ -76,27 +77,25 @@ TEMPLATES = [
 WSGI_APPLICATION = "mysite.wsgi.application"
 
 REST_FRAMEWORK = {
-    
-    # 기본권한 설정: 누구나 API에 접근 가능(개발시 사용)
+    # 인증: 요청자가 누구인지 확인하는 방식
     "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework_simplejwt.authentication.JWTAuthentication",  # JWT 우선
+        # 2) 전환기 안전장치(선택): 기존 세션도 허용
+        #    모든 프론트가 JWT로 바뀐 후 제거 가능
         "rest_framework.authentication.SessionAuthentication",
-        "rest_framework.authentication.BasicAuthentication",
     ],
-    
+    # 권한: 로그인한 사용자만 API 접근 허용
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",
-  ],
-  
-  # 기본 페이지네이션 설정
-    "DEFAULT_PAGINATION_CLASS": "todo.pagination.CustomPageNumberPagination",
-
-    "PAGE_SIZE": 3,
-
-     "DEFAULT_RENDERER_CLASSES": [
-        "rest_framework.renderers.JSONRenderer",
-        "rest_framework.renderers.BrowsableAPIRenderer",
     ],
-
+    # 페이지네이션: 목록 API를 3개씩 나눠서 반환
+    "DEFAULT_PAGINATION_CLASS": "todo.pagination.CustomPageNumberPagination",
+    "PAGE_SIZE": 3,
+    # 렌더러: 응답 형식 지정
+    "DEFAULT_RENDERER_CLASSES": [
+        "rest_framework.renderers.JSONRenderer",  # JSON (실서비스)
+        "rest_framework.renderers.BrowsableAPIRenderer",  # DRF 웹 UI (개발용)
+    ],
 }
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
@@ -140,13 +139,12 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/6.0/howto/static-files/
+
 STATIC_URL = 'static/'
 
-# STATICFILES_DIRS = [
-#     BASE_DIR / "static",
-# ]
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / "media"

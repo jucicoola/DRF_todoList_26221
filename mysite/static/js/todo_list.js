@@ -1,0 +1,331 @@
+document.addEventListener("DOMContentLoaded", () => {
+  // ======================================================
+  // 0) 기본 설정 / 상태값
+  // ======================================================
+  const LOGIN_PAGE_URL = "/login/";
+  let currentPage = 1;
+
+  // axios 인스턴스(window.api) 확인
+  if (!window.api) {
+    console.error("window.api가 없습니다. base.html에서 static/js/api.js 로드 확인");
+    alert("설정 오류: api.js가 로드되지 않았습니다.");
+    return;
+  }
+
+  // access_token 없으면 로그인으로
+  const access = localStorage.getItem("access_token");
+  if (!access) {
+    console.log("access_token 없음 → 로그인 이동");
+    window.location.href = LOGIN_PAGE_URL;
+    return;
+  }
+
+  // ======================================================
+  // 1) 공통 헬퍼
+  // ======================================================
+  // 인증 실패(401/403) → 토큰 삭제 후 로그인 이동
+  function handleAuthError(err) {
+    const status = err.response?.status;
+    if (status === 401 || status === 403) {
+      console.log("인증 실패(401/403) → 토큰 삭제 후 로그인 이동");
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("refresh_token");
+      window.location.href = LOGIN_PAGE_URL;
+    }
+    return Promise.reject(err);
+  }
+
+  // interaction API 경로 헬퍼
+  const InteractionAPI = {
+    like: (todoId) => `/interaction/like/${todoId}/`,
+    bookmark: (todoId) => `/interaction/bookmark/${todoId}/`,
+    comment: (todoId) => `/interaction/comment/${todoId}/`,
+    commentList: (todoId) => `/interaction/comment/${todoId}/list/`,
+  };
+
+  // 안전한 숫자 변환
+  function toNumber(v, fallback = 0) {
+    const n = Number(v);
+    return Number.isFinite(n) ? n : fallback;
+  }
+
+  // ======================================================
+  // 2) 데이터 로딩 함수 (Read)
+  // ======================================================
+  async function loadPage(page) {
+    try {
+      const res = await window.api.get(`/todo/viewsets/view/?page=${page}`);
+      const data = res.data;
+
+      const todos = data.data || data.results || [];
+      renderTodos(todos);
+      updatePaginationUI(data);
+
+      currentPage = data.current_page || page;
+    } catch (err) {
+      handleAuthError(err).catch(() => {});
+      console.error("페이지 로드 실패", err.response?.data || err.message);
+    }
+  }
+
+  async function loadComments(todoId, card) {
+    const listEl = card.querySelector(".comment-list");
+    if (!listEl) return;
+
+    try {
+      const res = await window.api.get(InteractionAPI.commentList(todoId));
+      const comments = res.data || [];
+
+      listEl.innerHTML = "";
+      comments.forEach((c) => {
+        const item = document.createElement("div");
+        item.className = "comment-item";
+        item.style.padding = "6px 0";
+        item.innerHTML = `
+          <div style="font-size:14px;">
+            <strong>${c.username ?? ""}</strong> : ${c.content ?? ""}
+          </div>
+        `;
+        listEl.appendChild(item);
+      });
+    } catch (err) {
+      handleAuthError(err).catch(() => {});
+      console.error("댓글 목록 로드 실패", err.response?.data || err.message);
+    }
+  }
+
+  // ======================================================
+  // 3) 렌더링 함수 (UI)
+  // ======================================================
+  function renderTodos(todos) {
+    const container = document.querySelector(".list_container");
+    container.innerHTML = "";
+
+    if (!todos || todos.length === 0) {
+      container.innerHTML = "<p>등록된 Todo 없음</p>";
+      return;
+    }
+
+    todos.forEach((todo) => {
+      const card = document.createElement("div");
+      card.className = "todo-item";
+      card.dataset.id = todo.id;
+
+      // 이미지 URL 처리
+      const imageSrc = todo.image
+        ? (todo.image.startsWith("http") ? todo.image : `${location.origin}${todo.image}`)
+        : "";
+
+      // 안전한 기본값 처리
+      const likeCount = toNumber(todo.like_count, 0);
+      const bookmarkCount = toNumber(todo.bookmark_count, 0);
+      const commentCount = toNumber(todo.comment_count, 0);
+
+      const isLiked = Boolean(todo.is_liked ?? false);
+      const isBookmarked = Boolean(todo.is_bookmarked ?? false);
+
+      card.innerHTML = `
+        <p><strong>제목:</strong> ${todo.title ?? ""}</p>
+        <p><strong>설명:</strong> ${todo.description ?? ""}</p>
+        <p><strong>작성자:</strong> ${todo.username ?? ""}</p>
+        <p><strong>완료 여부:</strong> ${todo.complete ? "완료" : "미완료"}</p>
+        <p><strong>exp:</strong> ${todo.exp ?? 0}</p>
+
+        ${imageSrc ? `<img src="${imageSrc}" style="max-width:200px;">` : ""}
+
+        <!-- 액션 바 -->
+        <div class="todo-actions" style="display:flex; gap:10px; align-items:center; margin-top:10px;">
+          <button class="btn-like" type="button"
+            data-id="${todo.id}" aria-pressed="${isLiked}"
+            style="display:flex; gap:6px; align-items:center; border-radius:999px; padding:6px 10px;">
+            <span class="icon">${isLiked ? "❤️" : "🤍"}</span>
+            <span class="count">${likeCount}</span>
+          </button>
+
+          <button class="btn-bookmark" type="button"
+            data-id="${todo.id}" aria-pressed="${isBookmarked}"
+            style="display:flex; gap:6px; align-items:center; border-radius:999px; padding:6px 10px;">
+            <span class="icon">${isBookmarked ? "🔖" : "📑"}</span>
+            <span class="count">${bookmarkCount}</span>
+          </button>
+
+          <button class="btn-comment" type="button"
+            data-id="${todo.id}"
+            style="display:flex; gap:6px; align-items:center; border-radius:999px; padding:6px 10px;">
+            <span class="icon">💬</span>
+            <span class="count">${commentCount}</span>
+          </button>
+        </div>
+
+        <!-- 댓글 입력 영역 (기본 숨김) -->
+        <div class="comment-box" style="display:none; margin-top:10px;">
+          <textarea class="comment-text" rows="3" style="width:100%;"></textarea>
+          <button class="comment-submit" data-id="${todo.id}">등록</button>
+        </div>
+
+        <!-- 댓글 표시 영역 -->
+        <div class="comment-list" style="margin-top:8px;"></div>
+      `;
+
+      // 카드 클릭 → detail 이동 (단, 액션/댓글 영역 클릭은 제외)
+      card.addEventListener("click", (e) => {
+        if (e.target.closest(".todo-actions") || e.target.closest(".comment-box")) return;
+        window.location.href = `/todo/detail/${todo.id}/`;
+      });
+
+      container.appendChild(card);
+
+      // 각 카드별 댓글 목록 로딩
+      loadComments(todo.id, card);
+    });
+  }
+
+  function updatePaginationUI(data) {
+    const current = data.current_page ?? currentPage ?? 1;
+    const total =
+      data.page_count ??
+      (typeof data.count === "number" && data.results
+        ? Math.ceil(data.count / data.results.length)
+        : "?");
+
+    document.getElementById("pageInfo").innerText = `${current} / ${total}`;
+    document.getElementById("prevBtn").disabled = !(data.previous);
+    document.getElementById("nextBtn").disabled = !(data.next);
+  }
+
+  // ======================================================
+  // 4) 이벤트 처리 (이벤트 위임 + 버튼 이벤트)
+  // ======================================================
+  // 좋아요/북마크/댓글/댓글등록 (이벤트 위임)
+  document.addEventListener("click", async (e) => {
+    // 좋아요
+    const likeBtn = e.target.closest(".btn-like");
+    if (likeBtn) {
+      e.stopPropagation();
+      e.preventDefault();
+
+      const todoId = likeBtn.dataset.id;
+
+      try {
+        const res = await window.api.post(InteractionAPI.like(todoId));
+        const { liked, like_count } = res.data;
+
+        likeBtn.setAttribute("aria-pressed", String(liked));
+        likeBtn.querySelector(".icon").textContent = liked ? "❤️" : "🤍";
+        likeBtn.querySelector(".count").textContent = toNumber(like_count, 0);
+      } catch (err) {
+        handleAuthError(err).catch(() => {});
+        console.error("좋아요 실패:", err.response?.data || err.message);
+        alert("좋아요 실패");
+      }
+      return;
+    }
+
+    // 북마크
+    const bookmarkBtn = e.target.closest(".btn-bookmark");
+    if (bookmarkBtn) {
+      e.stopPropagation();
+      e.preventDefault();
+
+      const todoId = bookmarkBtn.dataset.id;
+
+      try {
+        const res = await window.api.post(InteractionAPI.bookmark(todoId));
+        const { bookmarked, bookmark_count } = res.data;
+
+        bookmarkBtn.setAttribute("aria-pressed", String(bookmarked));
+        bookmarkBtn.querySelector(".icon").textContent = bookmarked ? "🔖" : "📑";
+        bookmarkBtn.querySelector(".count").textContent = toNumber(bookmark_count, 0);
+      } catch (err) {
+        handleAuthError(err).catch(() => {});
+        console.error("북마크 실패:", err.response?.data || err.message);
+        alert("북마크 실패");
+      }
+      return;
+    }
+
+    // 댓글 버튼 → 입력창 토글
+    const commentBtn = e.target.closest(".btn-comment");
+    if (commentBtn) {
+      e.stopPropagation();
+      e.preventDefault();
+
+      const card = commentBtn.closest(".todo-item");
+      const box = card.querySelector(".comment-box");
+
+      box.style.display =
+        (box.style.display === "none" || !box.style.display) ? "block" : "none";
+      return;
+    }
+
+    // 댓글 등록
+    const submitBtn = e.target.closest(".comment-submit");
+    if (submitBtn) {
+      e.stopPropagation();
+      e.preventDefault();
+
+      const todoId = submitBtn.dataset.id;
+      const card = submitBtn.closest(".todo-item");
+      const textarea = card.querySelector(".comment-text");
+      const content = textarea.value.trim();
+
+      if (!content) return;
+
+      try {
+        const res = await window.api.post(InteractionAPI.comment(todoId), { content });
+        const saved = res.data;
+
+        // comment-list는 항상 만들어두었지만, 안전하게 재확인
+        const listEl = card.querySelector(".comment-list");
+
+        const item = document.createElement("div");
+        item.className = "comment-item";
+        item.style.padding = "6px 0";
+        item.innerHTML = `
+          <div style="font-size:14px;">
+            <strong>${saved.username ?? "me"}</strong> : ${saved.content}
+          </div>
+        `;
+        listEl.prepend(item);
+
+        // 댓글 수 +1
+        const countEl = card.querySelector(".btn-comment .count");
+        countEl.textContent = toNumber(countEl.textContent, 0) + 1;
+
+        // 입력 초기화
+        textarea.value = "";
+
+        // 입력창 유지(원하면 none으로 변경 가능)
+        card.querySelector(".comment-box").style.display = "block";
+      } catch (err) {
+        handleAuthError(err).catch(() => {});
+        console.error("댓글 등록 실패", err.response?.data || err.message);
+        alert("댓글 등록 실패");
+      }
+      return;
+    }
+  });
+
+  // 페이지 이동 버튼
+  document.getElementById("prevBtn").addEventListener("click", () => {
+    if (currentPage > 1) loadPage(currentPage - 1);
+  });
+
+  document.getElementById("nextBtn").addEventListener("click", () => {
+    loadPage(currentPage + 1);
+  });
+
+  // 생성 페이지 이동
+  document.getElementById("createBtn").addEventListener("click", () => {
+    window.location.href = "/todo/create/";
+  });
+
+  // document.getElementById("movieReviewsBtn").addEventListener("click", () => {
+  //   window.location.href = "/reviews/page/";
+  // });
+
+  // ======================================================
+  // 5) 초기 실행
+  // ======================================================
+  loadPage(1);
+});

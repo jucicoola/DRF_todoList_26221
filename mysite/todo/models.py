@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 
 class todo(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="todos")
-    name = models.CharField(max_length=10)
+    name = models.CharField(max_length=10, blank = True, default="")
     title = models.CharField(max_length=100)
     description = models.TextField(blank=True)
     complete = models.BooleanField(default=False)
@@ -19,6 +19,7 @@ class todo(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now= True)
     img = models.ImageField(upload_to='todo_images/', blank=True, null=True)
+    is_public = models.BooleanField(default=True)
 
     def __str__(self):
         return self.title

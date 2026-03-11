@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<div class="container">
+  <h2>새로 할 일을 만들어보세요</h2>
+    <div>
+      <label for="name">해야할 일:</label>
+      <input type="text" name="title" id="title">
+    </div>
+
+    <div>
+      <label for="description">설명:</label>
+      <textarea name="description" id="description">
+      </textarea>
+    </div>
+
+    <div>
+      <label for="complete">완료 여부:</label>
+      <input type="checkbox" name="complete" id="complete">
+    </div>
+
+    <div>
+      <label for="exp">경험치</label>
+      <input type="number" name="exp" id="exp" min="0">
+    </div>
+
+    <div>
+      <label for="image">이미지</label>
+      <input type="file", id="img">
+    </div>
+
+    <button type="submit" id="todoCreate">등록하기</button>
+    <button class="todoHome">홈으로</button>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+
+<script src="{% static 'js/todo_create.js' %}"></script>
+{% endblock %}
