@@ -1,6 +1,12 @@
 {% extends "base.html" %}
 {% load static %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/detail.css' %}">
+{% endblock %}
+
 {% block content %}
+<div id="page-data" data-todo-id="{{ todo.id }}"></div>
 
 <div class = "todoDetail" >
   <p><strong>이름:</strong> {{ todo.name }}</p>
@@ -16,7 +22,7 @@
   {% endif %}  
 </div>
 
-<div class="todoButon"></div>
+<div class="todoButon">
   <button class="todoUpdate">수정</button>
   <button class="todoDelete">삭제</button>
   <button class="todoHome">홈으로</button>
@@ -24,6 +30,5 @@
 {% endblock %}
 
 {% block scripts %}
-<div id="page-data" data-todo-id="{{ todo.id }}"></div>
-<script src="{% static 'js/todo_update.js' %}"></script>
+<script src="{% static 'js/todo_detail.js' %}"></script>
 {% endblock %}

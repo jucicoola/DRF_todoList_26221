@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 {% load static %}
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/update.css' %}">
+{% endblock %}
 {% block content %}
+<div id="page-data" data-todo-id="{{ todo.id }}"></div>
 
 <div class="container">
     <h2>Todo 수정</h2>
@@ -8,6 +12,7 @@
     <div>
         <label for="title"> 제목 </label>
         <input type = "text", title = "title", id =  "title" value = "{{todo.title}}"></input>
+    </div>
     <div>
         <label for="description">설명:</label>
         <textarea name="description" id="description">{{ todo.description }}</textarea>
@@ -44,7 +49,6 @@
 
 {% block scripts %}
 
-<div id="page-data" data-todo-id="{{ todo.id }}"></div>
 <script src="{% static 'js/todo_update.js' %}"></script>
 
 {% endblock %}

@@ -39,14 +39,14 @@ document.addEventListener("DOMContentLoaded", () => {
   function buildFormData() {
     const formData = new FormData();
 
-    formData.append("name", document.getElementById("name").value.trim());
+    formData.append("title", document.getElementById("title").value.trim());
     formData.append("description", document.getElementById("description").value.trim());
     formData.append("complete", document.getElementById("complete").checked ? "true" : "false");
     formData.append("exp", document.getElementById("exp").value || "0");
 
-    const fileInput = document.getElementById("image");
+    const fileInput = document.getElementById("img");
     if (fileInput.files && fileInput.files.length > 0) {
-      formData.append("image", fileInput.files[0]);
+      formData.append("img", fileInput.files[0]);
     }
 
     return formData;
@@ -55,23 +55,21 @@ document.addEventListener("DOMContentLoaded", () => {
   // ======================================================
   // 2) 이벤트 처리
   // ======================================================
-  document.getElementById("todoCreate").addEventListener("click", async (e) => {
+  document.getElementById("todoUpdate").addEventListener("click", async (e) => {
     e.preventDefault();
 
     try {
-      const formData = buildFormData();
-
-      // FormData일 때 Content-Type은 axios가 자동 설정하므로 헤더를 따로 건드리지 않음
-      const res = await window.api.post(CREATE_API_URL, formData);
-
-      console.log("생성 성공:", res.data);
-      window.location.href = "/todo/list/";
+        const todoId = document.getElementById("page-data").dataset.todoId;  // ✅ id 가져오기
+        const formData = buildFormData();
+        const res = await window.api.patch(`/todo/viewsets/view/${todoId}/`, formData);  // ✅ PATCH
+        console.log("수정 성공:", res.data);
+        window.location.href = "/todo/list/";
     } catch (err) {
-      handleAuthError(err).catch(() => {});
-      console.error("생성 실패:", err.response?.data || err.message);
-      alert("생성 실패: 콘솔/네트워크 확인");
+        handleAuthError(err).catch(() => {});
+        console.error("수정 실패:", err.response?.data || err.message);
+        alert("수정 실패: 콘솔/네트워크 확인");
     }
-  });
+});
 
   // ======================================================
   // 3) 초기화(선택)

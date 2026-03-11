@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // ======================================================
   // 0) 기본 설정
   // ======================================================
-  const todoId = "{{ todo.id }}";
+  const todoId = document.getElementById("page-data").dataset.todoId; 
   const LOGIN_PAGE_URL = "/login/";
   const LIST_PAGE_URL = "/todo/list/";
 

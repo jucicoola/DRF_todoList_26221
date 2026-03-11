@@ -112,8 +112,8 @@ document.addEventListener("DOMContentLoaded", () => {
       card.dataset.id = todo.id;
 
       // 이미지 URL 처리
-      const imageSrc = todo.image
-        ? (todo.image.startsWith("http") ? todo.image : `${location.origin}${todo.image}`)
+      const imageSrc = todo.img
+        ? (todo.img.startsWith("http") ? todo.img : `${location.origin}${todo.img}`)
         : "";
 
       // 안전한 기본값 처리

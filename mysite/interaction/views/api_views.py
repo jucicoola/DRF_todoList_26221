@@ -4,6 +4,9 @@
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
+from rest_framework.exceptions import PermissionDenied
+from rest_framework import viewsets
+from django.db.models import Q
 
 # 3-1. Local application:
 from todo.models import todo
@@ -13,10 +16,39 @@ from ..models import TodoLike, TodoBookmark, TodoComment
 
 
 class TodoViewSet(viewsets.ModelViewSet):
-
-    queryset = todo.objects.all().order_by("-created_at")
+    queryset = todo.objects.none()  # ✅ Router용으로만 남겨둠 (빈 쿼리셋)
     serializer_class = TodoSerializer
-    permission_classes = [AllowAny]
+
+
+    def get_permissions(self):
+        # 목록/상세 조회는 비로그인도 허용
+        if self.action in ["list", "retrieve"]:
+            return [AllowAny()]
+        return [IsAuthenticated()]  # ✅ 나머지는 로그인 필요
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_authenticated:
+            return todo.objects.filter(
+                Q(is_public=True) | Q(user=user)  # ✅ 공개글 + 본인글
+            ).order_by("-created_at")
+        return todo.objects.filter(is_public=True).order_by("-created_at")  # ✅ 비로그인은 공개글만
+
+    def get_serializer_context(self):
+        return {"request": self.request}
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)  # ✅ 작성자 자동 저장
+
+    def perform_update(self, serializer):
+        if serializer.instance.user != self.request.user:
+            raise PermissionDenied("본인의 글만 수정할 수 있습니다.")  # ✅
+        serializer.save()
+
+    def perform_destroy(self, instance):
+        if instance.user != self.request.user:
+            raise PermissionDenied("본인의 글만 삭제할 수 있습니다.")  # ✅
+        instance.delete()
     
     def list(self, request, *args, **kwargs):
         qs = self.filter_queryset(self.get_queryset())
@@ -65,10 +97,10 @@ class TodoViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=["post"], permission_classes=[IsAuthenticated])
     def like(self, request, pk=None):
         #내용 불러오기 
-        todo = self.get_object()
+        instance = self.get_object()
         user = request.user
         obj, created = TodoLike.objects.get_or_create(
-            todo=todo,
+            todo=instance,
             user=user
         )
         # 좋아요 처리 
@@ -80,7 +112,7 @@ class TodoViewSet(viewsets.ModelViewSet):
             liked = False
 
         #좋아요 개수 
-        like_count = TodoLike.objects.filter(todo=todo).count()
+        like_count = TodoLike.objects.filter(todo=instance).count()
 
 
         return Response({
@@ -92,10 +124,10 @@ class TodoViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=["post"], permission_classes=[IsAuthenticated])
     def bookmark(self, request, pk=None):
 
-        todo = self.get_object()
+        instance = self.get_object()
         user = request.user
         obj, created = TodoBookmark.objects.get_or_create(
-            todo=todo,
+            todo=instance,
             user=user
         )
 
@@ -106,7 +138,7 @@ class TodoViewSet(viewsets.ModelViewSet):
             obj.delete()
             bookmarked = False
 
-        bookmark_count = TodoBookmark.objects.filter(todo=todo).count()
+        bookmark_count = TodoBookmark.objects.filter(todo=instance).count()
 
         return Response({
             "bookmarked": bookmarked,
@@ -117,7 +149,7 @@ class TodoViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=["post"], permission_classes=[IsAuthenticated])
     def comments(self, request, pk=None):
 
-        todo = self.get_object()
+        instance = self.get_object()
         user = request.user
         content = (request.data.get("content") or "").strip()
 
@@ -130,13 +162,13 @@ class TodoViewSet(viewsets.ModelViewSet):
 
         # 댓글 생성
         TodoComment.objects.create(
-            todo=todo,
+            todo=instance,
             user=user,
             content=content
         )
 
         # 댓글 개수 계산
-        comment_count = TodoComment.objects.filter(todo=todo).count()
+        comment_count = TodoComment.objects.filter(todo=instance).count()
 
         return Response({
             "comment_count": comment_count

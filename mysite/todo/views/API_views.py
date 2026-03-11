@@ -10,6 +10,7 @@ from django.db.models import Q
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.exceptions import PermissionDenied
 
 
 #3 Local application
@@ -35,5 +36,15 @@ class TodoViewSet(viewsets.ModelViewSet):
     
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+    
+    def perform_update(self, serializer):  # ✅ 추가
+        if serializer.instance.user != self.request.user:
+            raise PermissionDenied("본인의 글만 수정할 수 있습니다.")
+        serializer.save()
+
+    def perform_destroy(self, instance):  # ✅ 추가
+        if instance.user != self.request.user:
+            raise PermissionDenied("본인의 글만 삭제할 수 있습니다.")
+        instance.delete()
 
 
