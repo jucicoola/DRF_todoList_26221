@@ -22,9 +22,13 @@ from ..models import todo
 #     return render(request, "todo.html", {"todos": todos})
 
 class TodoListView(ListView):
-    def get(self, request):
-        todos = todo.objects.all()
-        return render(request, "list.html", {"todos": todos})
+    """Todo 목록 페이지. 최신 생성순으로 정렬해서 보여줌."""
+
+    model = todo
+    template_name = "todo/list.html"
+    context_object_name = "todos"  # 템플릿에서 {{ todos }}로 접근
+    ordering = ["-created_at"]
+    success_url = reverse_lazy("todo:list")
 
 # class TodoListGenericView(ListView):
 #     model = todo
@@ -35,12 +39,12 @@ class TodoListView(ListView):
 class TodoCreateView(CreateView):
     model = todo
     fields = ['title', 'description', 'complete', 'exp', 'img']
-    template_name = "create.html"
-    success_url = reverse_lazy('todo:list')
+    template_name = "todo/create.html"
+    success_url = reverse_lazy('todo_list')
 
 class TodoDetailView(DetailView):
     model = todo
-    template_name = "detail.html"
+    template_name = "todo/detail.html"
     context_object_name = "todo"
 
 class TodoUpdateView(UpdateView):
@@ -48,8 +52,8 @@ class TodoUpdateView(UpdateView):
     fields = [
         "title", "description", "complete", "exp", 'img'
     ]
-    template_name = "update.html"
+    template_name = "todo/update.html"
     context_object_name = "todo"
-    success_url = reverse_lazy("todo:list")
+    success_url = reverse_lazy("todo_list")
         
 

@@ -1,39 +1,19 @@
-{% extends "base.html" %}
-{% load static %}
-{% block content %}
-
-<div class = "todoDetail" >
-  <p><strong>제목:</strong> {{ todo.title }}</p>
-  <p><strong>설명:</strong> {{ todo.description }}</p>
-  <p><strong>완료 여부:</strong> {{ todo.complete }}</p>
-  <p><strong>작성일:</strong> {{ todo.created_at }}</p>
-
-  {% if todo.img %}
-  <p><strong>이미지:</strong></p>
-  <img src = "{{todo.img.url}}" alt = "todo img" style="max-width:300px; height:auto;">
-  {% else %}
-    <p><strong>이미지:없음</strong></p>
-  {% endif %}  
-</div>
-
-<div class="todoButon"></div>
-  <button class="todoUpdate">수정</button>
-  <button class="todoDelete">삭제</button>
-  <button class="todoHome">홈으로</button>
-</div>
-
-<script>
 document.addEventListener("DOMContentLoaded", () => {
-  const todoId = "{{ todo.id }}";
-  const LOGIN_PAGE_URL = "/login/";   // ✅ (유지)
-  const LIST_PAGE_URL  = "/todo/list/"; // ✅ (유지)
+  // ======================================================
+  // 0) 기본 설정
+  // ======================================================
+  const todoId = document.getElementById("page-data").dataset.todoId; 
+  const LOGIN_PAGE_URL = "/login/";
+  const LIST_PAGE_URL = "/todo/list/";
 
+  // window.api 확인
   if (!window.api) {
-    console.error("window.api가 없습니다. base.html에서 static/js/api.js가 로드됐는지 확인하세요.");
+    console.error("window.api가 없습니다. base.html에서 static/js/api.js 로드 확인");
     alert("설정 오류: api.js가 로드되지 않았습니다.");
     return;
   }
 
+  // access_token 없으면 로그인으로
   const access = localStorage.getItem("access_token");
   if (!access) {
     console.log("access_token 없음 → 로그인 이동");
@@ -41,12 +21,14 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
+  // ======================================================
+  // 1) 공통 헬퍼
+  // ======================================================
   function handleAuthError(err) {
     const status = err.response?.status;
     if (status === 401 || status === 403) {
       alert("로그인이 필요합니다.");
 
-      // ✅ [추가됨] (선택) 토큰 정리
       localStorage.removeItem("access_token");
       localStorage.removeItem("refresh_token");
 
@@ -55,10 +37,15 @@ document.addEventListener("DOMContentLoaded", () => {
     return Promise.reject(err);
   }
 
+  // ======================================================
+  // 2) 버튼 이벤트
+  // ======================================================
+  // 수정 페이지로 이동
   document.querySelector(".todoUpdate").addEventListener("click", () => {
     window.location.href = `/todo/update/${todoId}/`;
   });
 
+  // 삭제 처리
   document.querySelector(".todoDelete").addEventListener("click", async () => {
     const ok = confirm("정말 삭제하시겠습니까?");
     if (!ok) return;
@@ -66,19 +53,15 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       await window.api.delete(`/todo/viewsets/view/${todoId}/`);
       window.location.href = LIST_PAGE_URL;
-
     } catch (err) {
       handleAuthError(err).catch(() => {});
-      console.error("삭제 실패:", err.response?.data || err.message); 
-      
+      console.error("삭제 실패:", err.response?.data || err.message);
       alert("삭제 중 오류가 발생했습니다.");
     }
   });
 
+  // 리스트(홈)로 이동
   document.querySelector(".todoHome").addEventListener("click", () => {
     window.location.href = LIST_PAGE_URL;
   });
-
 });
-</script>
-{% endblock %}

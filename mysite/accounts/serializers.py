@@ -22,11 +22,11 @@ class SignupSerializers(serializers.Serializer):
     def validate(self, attrs):
         if attrs["password"] != attrs["password2"]:
             raise serializers.ValidationError({
-                "두 비밀번호가 일치하지 않습니다."
+                "password":"두 비밀번호가 일치하지 않습니다."
             })
         return attrs
         
-    def create(self, validated_date):
+    def create(self, validated_data):
         user = User.objects.create_user(
             username=validated_data["username"],
             password=validated_data["password"],
